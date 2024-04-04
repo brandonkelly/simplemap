@@ -680,6 +680,10 @@ class GeoService extends Component
 		else if (!is_array($location) || !isset($location['lat'], $location['lng']))
 			$location = [];
 
+		if (!$location) {
+			$location = [];
+		}
+
 		return $location;
 	}
 
@@ -759,9 +763,13 @@ class GeoService extends Component
 				$url = str_replace('.json', rawurlencode(', ' . $country) . '.json', $url);
 		}
 
+		$referer = Craft::$app->getRequest()->getIsConsoleRequest()
+			? Craft::getAlias('@web')
+			: Craft::$app->urlManager->getHostInfo();
+
 		$data = (string) static::_client()->get($url, [
             'headers' => [
-                'referer' => Craft::$app->urlManager->getHostInfo()
+                'referer' => $referer,
             ]
         ])->getBody();
 		$data = Json::decodeIfJson($data);

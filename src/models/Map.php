@@ -40,7 +40,7 @@ class Map extends BaseLocation
 	public ?int $fieldId = null;
 
 	/** @var int */
-	public int $zoom = 15;
+	public ?int $zoom = 15;
 
 	/** @var int|float|null */
 	public int|null|float $distance = null;
