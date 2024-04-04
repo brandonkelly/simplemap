@@ -1,3 +1,14 @@
+## 4.0.5 - 2024-04-04
+### Fixed
+- Fix referred on Mapbox geo requests (Fixes #338, via @maxdmyers)
+- Fix type errors in front-end usage (Fixes #379, via @samhibberd)
+- Fix error when normalizing invalid location (Fixes #368, #380, via @Decyphr)
+- Fix intermittent issues w/ Google Maps API loading (Fixes #294, via @davidwebca)
+- Allow nullable zoom value (Fixes #381)
+- Pass site language to embedded Google map (Fixes #373)
+- Support casting map to string (Fixes #362)
+- Remove reference to MaxMind Lite from docs (Fixes #358)
+
 ## 4.0.4 - 2023-06-26
 ### Fixed
 - Update settings autosuggest input (Fixes #374)

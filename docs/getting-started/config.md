@@ -44,9 +44,6 @@ needed!
 ##### [ipstack](https://ipstack.com/product)
 ipstack offer free and paid-for versions of their API.
 
-##### MaxMind Lite
-No token required
-
 ##### [MaxMind](https://www.maxmind.com/en/geoip2-precision-services)
 MaxMind offer free lookup database that must be stored locally, and a more
 accurate paid-for version of their API.
@@ -197,7 +194,7 @@ constants.
 use ether\simplemap\services\GeoLocationService;
 
 return [
-    'geoLocationService' => GeoLocationService::MaxMindLite,
+    'geoLocationService' => GeoLocationService::MaxMind,
 ];
 ```
 

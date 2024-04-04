@@ -145,6 +145,7 @@ class EmbedService extends Component
 		$params = http_build_query([
 			'key' => $settings->getMapToken(),
 			'callback' => $callbackName,
+			'language' => Craft::$app->getSites()->getCurrentSite()->language,
 		]);
 
 		$js = <<<JS

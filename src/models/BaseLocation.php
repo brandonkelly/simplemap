@@ -46,7 +46,7 @@ abstract class BaseLocation extends Model
 	public function __construct ($config = [])
 	{
 		Typecast::properties(static::class, $config);
-		
+
 		parent::__construct($config);
 
 		if ($this->address === null)
@@ -113,6 +113,11 @@ abstract class BaseLocation extends Model
 		$addr = array_filter($addr);
 
 		return new Markup(implode($glue, $addr), 'utf8');
+	}
+
+	public function __toString(): string
+	{
+		return (string) $this->address([], ', ');
 	}
 
 }
