@@ -1,8 +1,4 @@
-## 5.0.0 - 2024-03-01
-### Changed
-- Add support for Craft 5
-
-## 4.0.5 - 2024-04-04
+## 5.0.0 - 2024-04-04
 ### Fixed
 - Fix referred on Mapbox geo requests (Fixes #338, via @maxdmyers)
 - Fix type errors in front-end usage (Fixes #379, via @samhibberd)
@@ -12,6 +8,10 @@
 - Pass site language to embedded Google map (Fixes #373)
 - Support casting map to string (Fixes #362)
 - Remove reference to MaxMind Lite from docs (Fixes #358)
+
+## 5.0.0-rc1 - 2024-03-01
+### Changed
+- Add support for Craft 5
 
 ## 4.0.4 - 2023-06-26
 ### Fixed
