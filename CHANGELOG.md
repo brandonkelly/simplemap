@@ -1,4 +1,4 @@
-## 5.0.1 - 2024-06-27
+## 5.0.1 - 2024-06-27 [CRITICAL]
 ### Security
 - Removed Polyfill.io (https://sansec.io/research/polyfill-supply-chain-attack)
 
