@@ -1,3 +1,7 @@
+## 5.0.1 - 2024-06-27
+### Security
+- Removed Polyfill.io (https://sansec.io/research/polyfill-supply-chain-attack)
+
 ## 5.0.0 - 2024-04-04
 ### Fixed
 - Fix referred on Mapbox geo requests (Fixes #338, via @maxdmyers)
