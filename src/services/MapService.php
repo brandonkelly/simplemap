@@ -375,7 +375,7 @@ class MapService extends Component
 		// Filter the query
 		$query
 			->subQuery
-			->addSelect($search . ' as [[mapsCalculatedDistance]]')
+			->addSelect($search . ' as [[distance]]')
 			->andWhere($restrict)
 			->andWhere([
 				'not',
@@ -385,9 +385,9 @@ class MapService extends Component
 		if (Craft::$app->getDb()->driverName === 'pgsql')
 			$query->subQuery->andWhere($search . ' <= ' . $radius);
 		else
-			$query->subQuery->andHaving('[[mapsCalculatedDistance]] <= ' . $radius);
+			$query->subQuery->andHaving('[[distance]] <= ' . $radius);
 
-		return '[[mapsCalculatedDistance]]';
+		return '[[distance]]';
 	}
 
 	/**
@@ -407,6 +407,7 @@ class MapService extends Component
 			elseif ($order !== 'distance') $nextOrder[$order] = $sort;
 		}
 
+		$query->subQuery->orderBy($nextOrder);
 		$query->orderBy($nextOrder);
 	}
 

@@ -11,10 +11,13 @@ namespace ether\simplemap\fields;
 use Craft;
 use craft\base\Element;
 use craft\base\ElementInterface;
+use craft\base\Event;
 use craft\base\Field;
 use craft\base\PreviewableFieldInterface;
+use craft\elements\db\ElementQuery;
 use craft\elements\db\ElementQueryInterface;
 use craft\errors\InvalidFieldException;
+use craft\events\CancelableEvent;
 use craft\helpers\Json;
 use ether\simplemap\enums\GeoService as GeoEnum;
 use ether\simplemap\enums\MapTiles;
@@ -32,6 +35,7 @@ use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 use Twig\Markup;
 use yii\base\InvalidConfigException;
+use yii\db\ExpressionInterface;
 use yii\db\Schema;
 
 /**
@@ -155,8 +159,21 @@ class MapField extends Field implements PreviewableFieldInterface
 	 */
 	public string $boundary = '""';
 
+	private static $searchParams = null;
+
 	// Methods
 	// =========================================================================
+
+	public function init(): void
+	{
+		Event::on(
+			ElementQuery::class,
+			ElementQuery::EVENT_AFTER_PREPARE,
+			[$this, 'afterPrepareElementQuery'],
+		);
+
+		parent::init();
+	}
 
 	// Methods: Static
 	// -------------------------------------------------------------------------
@@ -190,6 +207,19 @@ class MapField extends Field implements PreviewableFieldInterface
 			self::TRANSLATION_METHOD_LANGUAGE,
 			self::TRANSLATION_METHOD_CUSTOM,
 		];
+	}
+
+	public static function queryCondition(array $instances, mixed $value, array &$params): array|string|ExpressionInterface|false|null
+	{
+		if (empty($instances) || empty($value))
+			return null;
+
+		self::$searchParams = [
+			'field' => $instances[0],
+			'value' => $value,
+		];
+
+		return null;
 	}
 
 	// Methods: Instance
@@ -233,13 +263,6 @@ class MapField extends Field implements PreviewableFieldInterface
 		return $rules;
 	}
 
-	/**
-	 * @param mixed                         $value
-	 * @param ElementInterface|Element|null $element
-	 *
-	 * @return Map
-	 * @throws Exception
-	 */
 	public function normalizeValue (mixed $value, ElementInterface|Element $element = null): Map
 	{
 		if (is_string($value))
@@ -272,14 +295,6 @@ class MapField extends Field implements PreviewableFieldInterface
 		return $map;
 	}
 
-	/**
-	 * @return string
-	 * @throws InvalidConfigException
-	 * @throws LoaderError
-	 * @throws RuntimeError
-	 * @throws SyntaxError
-	 * @throws \yii\base\Exception
-	 */
 	public function getSettingsHtml (): string
 	{
 		$value = new Map();
@@ -337,13 +352,6 @@ class MapField extends Field implements PreviewableFieldInterface
 		]);
 	}
 
-	/**
-	 * @param null                  $value
-	 * @param ElementInterface|null $element
-	 *
-	 * @return string
-	 * @throws InvalidConfigException
-	 */
 	public function getInputHtml ($value = null, ElementInterface $element = null): string
 	{
 		if ($element !== null && $element->hasEagerLoadedElements($this->handle))
@@ -355,39 +363,11 @@ class MapField extends Field implements PreviewableFieldInterface
 		);
 	}
 
-	/**
-	 * @inheritdoc
-	 *
-	 * @param mixed            $value
-	 * @param ElementInterface $element
-	 *
-	 * @return string
-	 * @throws Exception
-	 */
 	public function getTableAttributeHtml (mixed $value, ElementInterface $element): string
 	{
 		return $this->normalizeValue($value, $element)->address;
 	}
 
-	/**
-	 * @param ElementQueryInterface $query
-	 * @param                       $value
-	 *
-	 * @return void
-	 * @throws Exception
-	 */
-	public function modifyElementsQuery (ElementQueryInterface $query, $value): void
-	{
-		if (!SimpleMap::getInstance())
-			return;
-
-		SimpleMap::getInstance()->map->modifyElementsQuery($query, $value, $this);
-	}
-
-	/**
-	 * @inheritdoc
-	 * @throws Exception
-	 */
 	public function isValueEmpty ($value, ElementInterface $element): bool
 	{
 		return $this->normalizeValue($value)->isValueEmpty();
@@ -417,9 +397,6 @@ class MapField extends Field implements PreviewableFieldInterface
 	// Methods: Events
 	// -------------------------------------------------------------------------
 
-	/**
-	 * @inheritdoc
-	 */
 	public function beforeSave (bool $isNew): bool
 	{
 		$this->lat  = (float) $this->lat;
@@ -432,13 +409,6 @@ class MapField extends Field implements PreviewableFieldInterface
 		return parent::beforeSave($isNew);
 	}
 
-	/**
-	 * @param ElementInterface $element
-	 * @param bool             $isNew
-	 *
-	 * @return bool
-	 * @throws InvalidFieldException
-	 */
 	public function beforeElementSave (ElementInterface $element, bool $isNew): bool
 	{
 		if (!SimpleMap::getInstance()->map->validateField($this, $element))
@@ -447,18 +417,25 @@ class MapField extends Field implements PreviewableFieldInterface
 		return parent::beforeElementSave($element, $isNew);
 	}
 
-	/**
-	 * @param ElementInterface $element
-	 * @param bool             $isNew
-	 *
-	 * @throws InvalidFieldException
-	 * @throws Throwable
-	 */
 	public function afterElementSave (ElementInterface $element, bool $isNew): void
 	{
 		SimpleMap::getInstance()->map->saveField($this, $element);
 
 		parent::afterElementSave($element, $isNew);
+	}
+
+	public function afterPrepareElementQuery (CancelableEvent $event): void
+	{
+		if (!self::$searchParams) return;
+
+		/** @var ElementQueryInterface $query */
+		$query = $event->sender;
+
+		SimpleMap::getInstance()->map->modifyElementsQuery(
+			$query,
+			self::$searchParams['value'],
+			self::$searchParams['field'],
+		);
 	}
 
 	// Helpers
