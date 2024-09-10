@@ -1,3 +1,7 @@
+## 5.0.2 - 2024-09-10
+### Fixed
+- Fixes location search (Fixes #394, #393, #392)
+
 ## 5.0.1 - 2024-06-27 [CRITICAL]
 ### Security
 - Removed Polyfill.io (https://sansec.io/research/polyfill-supply-chain-attack)
