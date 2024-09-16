@@ -1,3 +1,7 @@
+## 5.0.3 - 2024-09-16
+### Fixed
+- Fixed location filter affecting unrelated queries (Fixes #405)
+
 ## 5.0.2 - 2024-09-10
 ### Fixed
 - Fixes location search (Fixes #394, #393, #392)

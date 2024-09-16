@@ -436,6 +436,9 @@ class MapField extends Field implements PreviewableFieldInterface
 			self::$searchParams['value'],
 			self::$searchParams['field'],
 		);
+
+		// Clear search params to prevent it being applied to unrelated queries.
+		self::$searchParams = null;
 	}
 
 	// Helpers

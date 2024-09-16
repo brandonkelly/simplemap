@@ -193,7 +193,7 @@ class MapService extends Component
 			'[[' . $alias . '.fieldId]] = ' . $field->id,
 		];
 
-		$query->subQuery->join('JOIN', $table . ' ' . $alias, $on);
+		$query->subQuery->join('LEFT JOIN', $table . ' ' . $alias, $on);
 
 		if ($value === ':empty:')
 		{
